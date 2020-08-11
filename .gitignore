@@ -223,3 +223,6 @@ FakesAssemblies/
 _Pvt_Extensions
 
 .idea/
+
+# Secrets
+appsettings-secrets.json

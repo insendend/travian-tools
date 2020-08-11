@@ -23,6 +23,10 @@ namespace TravianTools.StatCollectWorker
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostContext, services) =>
+                {
+                    services.AddJsonFile("appsettings-secrets.json");
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     var cfg = hostContext.Configuration;
