@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TravianTools.Core.Driver;
 
 namespace TravianTools.StatCollectWorker
 {
@@ -23,6 +25,9 @@ namespace TravianTools.StatCollectWorker
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    var cfg = hostContext.Configuration;
+                    services.Configure<TravianDriverSettings>(o => cfg.GetSection("Driver").Bind(o));
+                    services.AddTransient<TravianDriver>();
                     services.AddHostedService<StatCollectWorker>();
                 });
     }

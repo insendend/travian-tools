@@ -3,7 +3,7 @@
     "TravianTools.StatCollectWorker": {
       "commandName": "Project",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Production"
       }
     }
   }
