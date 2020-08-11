@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravianTools.Core", "TravianTools.Core\TravianTools.Core.csproj", "{7CD84BF2-4A83-4CC6-AB92-6D0289CA9741}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravianTools.DAL", "TravianTools.DAL\TravianTools.DAL.csproj", "{55F8DB4A-CCA9-486A-859A-CB153FD996A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravianTools.Tests", "TravianTools.Tests\TravianTools.Tests.csproj", "{E4AE239C-1F94-4F9D-940A-A6FC9F74D40C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workers", "Workers", "{AF8B35EC-D933-4194-B8B5-5BF1EF2DE909}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravianTools.StatCollectWorker", "TravianTools.StatCollectWorker\TravianTools.StatCollectWorker.csproj", "{15958BC2-58A3-4793-95D9-5A3B3495BA3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CD84BF2-4A83-4CC6-AB92-6D0289CA9741}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CD84BF2-4A83-4CC6-AB92-6D0289CA9741}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CD84BF2-4A83-4CC6-AB92-6D0289CA9741}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CD84BF2-4A83-4CC6-AB92-6D0289CA9741}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55F8DB4A-CCA9-486A-859A-CB153FD996A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F8DB4A-CCA9-486A-859A-CB153FD996A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F8DB4A-CCA9-486A-859A-CB153FD996A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F8DB4A-CCA9-486A-859A-CB153FD996A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4AE239C-1F94-4F9D-940A-A6FC9F74D40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4AE239C-1F94-4F9D-940A-A6FC9F74D40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4AE239C-1F94-4F9D-940A-A6FC9F74D40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4AE239C-1F94-4F9D-940A-A6FC9F74D40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15958BC2-58A3-4793-95D9-5A3B3495BA3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15958BC2-58A3-4793-95D9-5A3B3495BA3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15958BC2-58A3-4793-95D9-5A3B3495BA3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15958BC2-58A3-4793-95D9-5A3B3495BA3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{15958BC2-58A3-4793-95D9-5A3B3495BA3E} = {AF8B35EC-D933-4194-B8B5-5BF1EF2DE909}
+	EndGlobalSection
+EndGlobal
