@@ -20,9 +20,6 @@ namespace TravianTools.StatCollectWorker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // TODO: delete after test
-            _travianDriver.Authorize();
-            
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
