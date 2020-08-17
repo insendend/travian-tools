@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TravianTools.Core.Driver;
+using TravianTools.DAL;
 
 namespace TravianTools.StatCollectWorker
 {
@@ -30,8 +32,12 @@ namespace TravianTools.StatCollectWorker
                 .ConfigureServices((hostContext, services) =>
                 {
                     var cfg = hostContext.Configuration;
+                    services.AddDbContext<TravianToolsContext>(o => o.UseSqlite("Data Source=TravianTools.db"));
+                    services.AddScoped<ITravianToolsContext, TravianToolsContext>();
                     services.Configure<TravianDriverSettings>(o => cfg.GetSection("Driver").Bind(o));
-                    services.AddTransient<TravianDriver>();
+                    services.Configure<StatWorkerSettings>(o => cfg.GetSection("StatWorkerSettings").Bind(o));
+                    services.AddTransient<ITravianDriver, TravianDriver>();
+                    services.AddTransient<ICountryInformation, CountryInformation>();
                     services.AddHostedService<StatCollectWorker>();
                 });
     }

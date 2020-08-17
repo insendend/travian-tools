@@ -1,84 +1,91 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Options;
+using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using TravianTools.Core.Driver.Models;
-using TravianTools.Core.Extensions;
 
 namespace TravianTools.Core.Driver
 {
-    public class TravianDriver : IDisposable
+    public class TravianDriver : ITravianDriver
     {
-        private readonly TravianDriverSettings _settings;
-        private readonly ChromeDriver _driver;
-        private bool _isLoggedIn;
+        private const string c_LoginPattern = @"{0}/login.php";
+        private readonly string baseUrl = "https://ts4.anglosphere.travian.com/";
+        private readonly string _login = "ivanf";
 
-        public TravianDriver(IOptions<TravianDriverSettings> settings)
+        //use it ONLY with cloud environment
+        //private readonly string login = "Tob Naivart";
+        private readonly string _password = "Qwerty1234";
+
+        bool ITravianDriver.IsLoggedIn()
         {
-            _settings = settings.Value;
-            _settings.ThrowIfNotValid();
-            
+            Driver.Navigate().GoToUrl(string.Format(c_LoginPattern, baseUrl));
+
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            var elements = Driver.FindElements(By.CssSelector(".pass [name=\"password\"]"));
+            return !elements.Any();
+        }
+
+        public ChromeDriver Driver { get; }
+
+        public string CurrentAccountName { get; private set; }
+
+        //TODO: check if driver is currently logged in
+
+        public TravianDriver(bool headless = false)
+        {
             var options = new ChromeOptions();
 
-            if (_settings.Headless)
+            if (headless)
             {
                 options.AddArgument("--headless");
             }
 
-            _driver = new ChromeDriver(_settings.ChromeDriverLocation, options);
+            Driver = new ChromeDriver(options);
         }
 
-        public VillageInfo GetVillageInfo(Point target, Point origin)
+        public void LoginDefault()
         {
-            if (!_isLoggedIn)
-            {
-                Login();
-            }
-            
-            var url = $"{_settings.HostUrl}/position_details.php?x={target.X}&y={target.Y}";
-            _driver.Navigate().GoToUrl(url);
-            
-            var info = new VillageInfo();
-
-            var tileElement = _driver.FindElementById("tileDetails");
-            info.Name = tileElement.FindElement(By.TagName("h1")).Text;
-
-            var villageInfoElem = _driver.FindElementsById("village_info").FirstOrDefault();
-            if (villageInfoElem != null && !tileElement.GetAttribute("class").Contains("oasis"))
-            {
-                info.IsVillage = true;
-
-                var villageInfoRows = villageInfoElem.FindElement(By.TagName("tbody")).FindElements(By.TagName("tr"));
-
-                info.Nation = villageInfoRows[0].FindElement(By.TagName("td")).Text;
-                info.PlayerName = villageInfoRows[2].FindElement(By.TagName("a")).Text;
-                info.Population = int.Parse(villageInfoRows[3].FindElement(By.TagName("td")).Text);
-                info.Distance = target.GetDistance(origin);
-            }
-
-            return info;
+            Login(_login, _password);
         }
-        
-        private void Login()
+
+        public void Login(string login, string password, List<Cookie> cookies = null)
         {
-            var url = $"{_settings.HostUrl}/login.php";
-            _driver.Navigate().GoToUrl(url);
-            
-            var loginElement = _driver.FindElement(By.CssSelector("[name=\"name\"]"));
-            var pwdElement = _driver.FindElement(By.CssSelector("[name=\"password\"]"));
-            var submitElement = _driver.FindElement(By.CssSelector("[type=\"submit\"]"));
-            
-            loginElement.SendKeys(_settings.Login);
-            pwdElement.SendKeys(_settings.Password);
-            submitElement.Click();
-            _isLoggedIn = true;
+            Driver.Navigate().GoToUrl(string.Format(c_LoginPattern, baseUrl));
+
+            AcceptCookieIfExist(cookies);
+
+            var loginElement = Driver.FindElement(By.CssSelector("[name=\"name\"]"));
+            var passElement = Driver.FindElement(By.CssSelector("[name=\"password\"]"));
+            loginElement.SendKeys(login);
+            passElement.SendKeys(password);
+            Driver.FindElement(By.CssSelector("[type=\"submit\"]")).Click();
+            CurrentAccountName = login;
+        }
+
+        private void AcceptCookieIfExist(List<Cookie> cookies)
+        {
+            foreach (var cookie in cookies)
+            {
+                Driver.Manage().Cookies.AddCookie(cookie);
+            }
+
+            Driver.Navigate().Refresh();
+
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+
+            var elements = Driver.FindElements(By.CssSelector("#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll.CybotCookiebotDialogBodyButton"));
+
+            if (elements.Any())
+            {
+                elements.First().Click();
+            }
         }
 
         public void Dispose()
         {
-            _driver?.Dispose();
+            Driver?.Dispose();
         }
     }
 }
