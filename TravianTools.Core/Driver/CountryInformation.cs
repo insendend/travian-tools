@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -50,11 +51,14 @@ namespace TravianTools.Core.Driver
 
                 var text = Driver.Driver.FindElementByCssSelector(".tip-contents .text.elementText").Text;
 
-                text = text.Replace("Player is under beginner's protection until ", "", StringComparison.OrdinalIgnoreCase);
+                var dtAsString = text
+                    .Replace("Player is under beginner's protection until ", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace(",", "")
+                    .TrimEnd('.');
 
-                if (DateTime.TryParse(text, out DateTime result))
+                if (DateTime.TryParseExact(dtAsString, "dd.MM.yy HH:mm", null, DateTimeStyles.AllowInnerWhite, out var dt))
                 {
-                    neighborVillage.UntilProtectionTime = result;
+                    neighborVillage.UntilProtectionTime = dt;
                 }
             }
 

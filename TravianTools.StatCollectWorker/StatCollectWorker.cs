@@ -25,6 +25,7 @@ namespace TravianTools.StatCollectWorker
         private readonly ICountryInformation _countryInformation;
         private readonly StatWorkerSettings _statWorkerSettings;
         private readonly TravianDriverSettings _travianDriverSettings;
+        private static readonly Random Rnd = new Random();
 
         public StatCollectWorker(ILogger<StatCollectWorker> logger,
             IServiceScopeFactory serviceScopeFactory,
@@ -41,33 +42,36 @@ namespace TravianTools.StatCollectWorker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-
-                var origin = new Point(_statWorkerSettings.OriginX, _statWorkerSettings.OriginY);
-                var nearestPoints = origin.GetNearestPoints(_statWorkerSettings.Radius);
-                await GetVillagePoints(nearestPoints, origin);
-
-                await Task.Delay(_statWorkerSettings.CheckDelay, stoppingToken);
-            }
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            var origin = new Point(_statWorkerSettings.OriginX, _statWorkerSettings.OriginY);
+            var nearestPoints = origin.GetNearestPoints(_statWorkerSettings.Radius).Shuffle();
+            await GetVillagePoints(nearestPoints);
         }
 
-        private async Task GetVillagePoints(IEnumerable<Point> points, Point origin)
+        private async Task GetVillagePoints(IEnumerable<Point> points)
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
+            using var scope = _serviceScopeFactory.CreateScope();
+            var context = scope.ServiceProvider.GetService<ITravianToolsContext>();
+
+            foreach (var point in points)
             {
-                var context = scope.ServiceProvider.GetService<ITravianToolsContext>();
+                var existsEntity = await context.NeighborsVillageInfos
+                    .FirstOrDefaultAsync(x =>
+                        x.PointX == point.X && x.PointY == point.Y);
 
-                foreach (var point in points)
+                if (existsEntity != default)
                 {
-                    if (_countryInformation.TryParseVillage(point, out NeighborsVillageInfo neighborVillage))
-                    {
-                        await context.NeighborsVillageInfos.AddAsync(neighborVillage);
-                    }
+                    continue;
                 }
-
-                await context.SaveChangesAsync();
+                
+                if (_countryInformation.TryParseVillage(point, out var neighborVillage) && 
+                    neighborVillage.UntilProtectionTime != default)
+                {
+                    await context.NeighborsVillageInfos.AddAsync(neighborVillage);
+                    await context.SaveChangesAsync();
+                }
+                
+                await Task.Delay(Rnd.Next(200, 1000));
             }
         }
 

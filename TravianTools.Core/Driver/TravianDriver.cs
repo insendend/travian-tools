@@ -12,9 +12,6 @@ namespace TravianTools.Core.Driver
         private const string c_LoginPattern = @"{0}/login.php";
         private readonly string baseUrl = "https://ts4.anglosphere.travian.com/";
         private readonly string _login = "ivanf";
-
-        //use it ONLY with cloud environment
-        //private readonly string login = "Tob Naivart";
         private readonly string _password = "Qwerty1234";
 
         bool ITravianDriver.IsLoggedIn()
@@ -54,7 +51,7 @@ namespace TravianTools.Core.Driver
         {
             Driver.Navigate().GoToUrl(string.Format(c_LoginPattern, baseUrl));
 
-            AcceptCookieIfExist(cookies);
+            // AcceptCookieIfExist(cookies);
 
             var loginElement = Driver.FindElement(By.CssSelector("[name=\"name\"]"));
             var passElement = Driver.FindElement(By.CssSelector("[name=\"password\"]"));
