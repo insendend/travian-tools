@@ -5,7 +5,7 @@ namespace TravianTools.DAL
 {
     public interface ITravianToolsContext
     {
-        DbSet<NeighborsVillageInfo> NeighborsVillageInfos { get; set; }
+        DbSet<ProtectionExpireVillages> ProtectionExpireVillages { get; set; }
 
         DbSet<StateConfig> Configs { get; set; }
 

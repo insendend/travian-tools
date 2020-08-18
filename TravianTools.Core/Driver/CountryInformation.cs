@@ -21,9 +21,9 @@ namespace TravianTools.Core.Driver
             Driver = travianDriver;
         }
 
-        public bool TryParseVillage(string hostUrl, Point villagePoint, out NeighborsVillageInfo neighborVillage)
+        public bool TryParseVillage(string hostUrl, Point villagePoint, out ProtectionExpireVillages neighborVillage)
         {
-            neighborVillage = new NeighborsVillageInfo
+            neighborVillage = new ProtectionExpireVillages
             {
                 PointX = villagePoint.X,
                 PointY = villagePoint.Y
@@ -35,6 +35,9 @@ namespace TravianTools.Core.Driver
             var addInfo = GetAdditionalInfo();
 
             neighborVillage.IsVillage = addInfo.IsVillage;
+            neighborVillage.Population = addInfo.Population;
+            neighborVillage.Distance = addInfo.Distance;
+            neighborVillage.DirectUrl = url;
             //check that village in any protection
             var elements = Driver.Driver.FindElements(By.CssSelector(".option .arrow.disabled"));
 
@@ -64,9 +67,9 @@ namespace TravianTools.Core.Driver
             return neighborVillage.IsVillage;
         }
 
-        private (int Population, bool IsVillage) GetAdditionalInfo()
+        private (int Population, double Distance, bool IsVillage) GetAdditionalInfo()
         {
-            var result = (p: 0, v: false);
+            var result = (p: 0, d: 0d, v: false);
             
             try
             {
@@ -79,11 +82,18 @@ namespace TravianTools.Core.Driver
 
                 result.v = villageInfoElements != null && !tileElement.GetAttribute("class").Contains("oasis");
                 
-                var pElem = villageInfoElements?.FindElement(By.XPath(@"//*[@id=""village_info""]/tbody/tr[4]/td"));
-                if (pElem != null)
+                var pElemPop = villageInfoElements?.FindElement(By.XPath(@"//*[@id=""village_info""]/tbody/tr[4]/td"));
+                if (pElemPop != null)
                 {
-                    var population = pElem?.Text;
+                    var population = pElemPop.Text;
                     int.TryParse(population, out result.p);
+                }
+                
+                var pElemDist = villageInfoElements?.FindElement(By.XPath(@"//*[@id=""village_info""]/tbody/tr[5]/td"));
+                if (pElemDist != null)
+                {
+                    var distance = pElemDist.Text?.Split(new[]{' '}).FirstOrDefault();
+                    double.TryParse(distance,NumberStyles.Any, new CultureInfo("en-US"), out result.d);
                 }
             }
             catch (Exception ex)

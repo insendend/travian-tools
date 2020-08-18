@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Drawing;
 
 namespace TravianTools.DAL
 {
-    public class NeighborsVillageInfo: BaseEntity
+    public class ProtectionExpireVillages : BaseEntity
     {
         public int PointX { get; set; }
 
@@ -12,9 +11,11 @@ namespace TravianTools.DAL
         public DateTime? UntilProtectionTime { get; set; }
 
         public bool IsVillage { get; set; }
-        
-        // public int Population { get; set; }
-        //
-        // public string DirectUrl { get; set; }
+
+        public int Population { get; set; }
+
+        public string DirectUrl { get; set; }
+
+        public double Distance { get; set; }
     }
 }

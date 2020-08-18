@@ -7,10 +7,10 @@ namespace TravianTools.DAL
     {
         public TravianToolsContext(DbContextOptions<TravianToolsContext> options) : base(options)
         {
-
+            Database.EnsureCreated();
         }
 
-        public DbSet<NeighborsVillageInfo> NeighborsVillageInfos { get; set; }
+        public DbSet<ProtectionExpireVillages> ProtectionExpireVillages { get; set; }
 
         public DbSet<StateConfig> Configs { get; set; }
         

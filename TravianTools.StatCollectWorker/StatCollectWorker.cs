@@ -44,18 +44,24 @@ namespace TravianTools.StatCollectWorker
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             var origin = new Point(_statWorkerSettings.OriginX, _statWorkerSettings.OriginY);
-            var nearestPoints = origin.GetNearestPoints(_statWorkerSettings.Radius).Shuffle();
+            var nearestPoints = origin.GetNearestPoints(_statWorkerSettings.Radius)
+                .Shuffle()
+                .ToList();
             await GetVillagePoints(nearestPoints);
         }
 
-        private async Task GetVillagePoints(IEnumerable<Point> points)
+        private async Task GetVillagePoints(List<Point> points)
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetService<ITravianToolsContext>();
-
+            var current = 0;
             foreach (var point in points)
             {
-                var existsEntity = await context.NeighborsVillageInfos
+                current++;
+                var ready = Math.Round((double)current / points.Count * 100, 2);
+                Console.WriteLine($"current: {current} ({ready}%)");
+                
+                var existsEntity = await context.ProtectionExpireVillages
                     .FirstOrDefaultAsync(x =>
                         x.PointX == point.X && x.PointY == point.Y);
 
@@ -63,14 +69,11 @@ namespace TravianTools.StatCollectWorker
                 {
                     continue;
                 }
-                
-                if (_countryInformation.TryParseVillage(_travianDriverSettings.HostUrl, point, out var neighborVillage) && 
-                    neighborVillage.UntilProtectionTime != default)
-                {
-                    await context.NeighborsVillageInfos.AddAsync(neighborVillage);
-                    await context.SaveChangesAsync();
-                }
-                
+
+                _countryInformation.TryParseVillage(_travianDriverSettings.HostUrl, point, out var neighborVillage);
+                await context.ProtectionExpireVillages.AddAsync(neighborVillage);
+                await context.SaveChangesAsync();
+
                 await Task.Delay(Rnd.Next(200, 1000));
             }
         }
