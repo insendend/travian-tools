@@ -32,8 +32,9 @@ namespace TravianTools.Core.Driver
             var url = $"{hostUrl}/{VillageInfoRoutePattern}?x={villagePoint.X}&y={villagePoint.Y}";
             Driver.Driver.Navigate().GoToUrl(url);
 
-            neighborVillage.IsVillage = IsVillage();
+            var addInfo = GetAdditionalInfo();
 
+            neighborVillage.IsVillage = addInfo.IsVillage;
             //check that village in any protection
             var elements = Driver.Driver.FindElements(By.CssSelector(".option .arrow.disabled"));
 
@@ -63,16 +64,34 @@ namespace TravianTools.Core.Driver
             return neighborVillage.IsVillage;
         }
 
-        private bool IsVillage()
+        private (int Population, bool IsVillage) GetAdditionalInfo()
         {
-            var tileElement = Driver.Driver.FindElementById("tileDetails");
+            var result = (p: 0, v: false);
+            
+            try
+            {
+                var tileElement = Driver.Driver.FindElementById("tileDetails");
 
-            var villageInfoElements = Driver
-                .Driver
-                .FindElementsById("village_info")
-                .FirstOrDefault();
+                var villageInfoElements = Driver
+                    .Driver
+                    .FindElementsById("village_info")
+                    .FirstOrDefault();
 
-            return villageInfoElements != null && !tileElement.GetAttribute("class").Contains("oasis");
+                result.v = villageInfoElements != null && !tileElement.GetAttribute("class").Contains("oasis");
+                
+                var pElem = villageInfoElements?.FindElement(By.XPath(@"//*[@id=""village_info""]/tbody/tr[4]/td"));
+                if (pElem != null)
+                {
+                    var population = pElem?.Text;
+                    int.TryParse(population, out result.p);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
+            return result;
         }
     }
 }

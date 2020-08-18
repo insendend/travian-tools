@@ -12,5 +12,9 @@ namespace TravianTools.DAL
         public DateTime? UntilProtectionTime { get; set; }
 
         public bool IsVillage { get; set; }
+        
+        // public int Population { get; set; }
+        //
+        // public string DirectUrl { get; set; }
     }
 }
