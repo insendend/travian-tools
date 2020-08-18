@@ -64,7 +64,7 @@ namespace TravianTools.StatCollectWorker
                     continue;
                 }
                 
-                if (_countryInformation.TryParseVillage(point, out var neighborVillage) && 
+                if (_countryInformation.TryParseVillage(_travianDriverSettings.HostUrl, point, out var neighborVillage) && 
                     neighborVillage.UntilProtectionTime != default)
                 {
                     await context.NeighborsVillageInfos.AddAsync(neighborVillage);
@@ -95,9 +95,9 @@ namespace TravianTools.StatCollectWorker
                     .ToList();
 
 
-                if (!_countryInformation.Driver.IsLoggedIn())
+                if (!_countryInformation.Driver.IsLoggedIn(_travianDriverSettings.HostUrl))
                 {
-                    _countryInformation.Driver.Login(_travianDriverSettings.Login, _travianDriverSettings.Password, cookies);
+                    _countryInformation.Driver.Login(_travianDriverSettings.HostUrl, _travianDriverSettings.Login, _travianDriverSettings.Password, cookies);
 
                     foreach (var cookie in _countryInformation.Driver.Driver.Manage().Cookies.AllCookies)
                     {

@@ -5,7 +5,7 @@ namespace TravianTools.Core.Driver
 {
     public interface ICountryInformation
     {
-        bool TryParseVillage(Point villagePoint, out NeighborsVillageInfo neighborVillage);
+        bool TryParseVillage(string hostUrl, Point villagePoint, out NeighborsVillageInfo neighborVillage);
 
         ITravianDriver Driver { get; }
     }

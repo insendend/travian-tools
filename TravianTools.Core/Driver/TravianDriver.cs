@@ -9,14 +9,11 @@ namespace TravianTools.Core.Driver
 {
     public class TravianDriver : ITravianDriver
     {
-        private const string c_LoginPattern = @"{0}/login.php";
-        private readonly string baseUrl = "https://ts4.anglosphere.travian.com/";
-        private readonly string _login = "ivanf";
-        private readonly string _password = "Qwerty1234";
+        private const string LoginRoutePattern = "login.php";
 
-        bool ITravianDriver.IsLoggedIn()
+        bool ITravianDriver.IsLoggedIn(string hostUrl)
         {
-            Driver.Navigate().GoToUrl(string.Format(c_LoginPattern, baseUrl));
+            Driver.Navigate().GoToUrl($"{hostUrl}/{LoginRoutePattern}");
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
 
@@ -27,8 +24,6 @@ namespace TravianTools.Core.Driver
         public ChromeDriver Driver { get; }
 
         public string CurrentAccountName { get; private set; }
-
-        //TODO: check if driver is currently logged in
 
         public TravianDriver(bool headless = false)
         {
@@ -42,14 +37,9 @@ namespace TravianTools.Core.Driver
             Driver = new ChromeDriver(options);
         }
 
-        public void LoginDefault()
+        public void Login(string hostUrl, string login, string password, List<Cookie> cookies = null)
         {
-            Login(_login, _password);
-        }
-
-        public void Login(string login, string password, List<Cookie> cookies = null)
-        {
-            Driver.Navigate().GoToUrl(string.Format(c_LoginPattern, baseUrl));
+            Driver.Navigate().GoToUrl($"{hostUrl}/{LoginRoutePattern}");
 
             // AcceptCookieIfExist(cookies);
 

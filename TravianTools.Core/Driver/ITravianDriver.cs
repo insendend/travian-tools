@@ -7,11 +7,9 @@ namespace TravianTools.Core.Driver
 {
     public interface ITravianDriver : IDisposable
     {
-        void LoginDefault();
+        void Login(string hostUrl, string login, string password, List<Cookie> cookies = null);
 
-        void Login(string login, string password, List<Cookie> cookies = null);
-
-        bool IsLoggedIn();
+        bool IsLoggedIn(string hostUrl);
 
         ChromeDriver Driver { get; }
 
