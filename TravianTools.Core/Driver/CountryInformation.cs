@@ -12,6 +12,7 @@ namespace TravianTools.Core.Driver
 {
     public class CountryInformation : ICountryInformation
     {
+        private bool A;
         private const string _c_VillageInfoPattern = @"{0}/position_details.php?x={1}&y={2}";
         private readonly string baseUrl = "https://ts4.anglosphere.travian.com";
 
